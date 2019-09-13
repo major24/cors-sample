@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <p>Test Simple CORS web api access</p>
+    <hr />
+    <p>
+        <div>
+            API server is set with Cors policy and this mvc calls directly from javascript: (https://localhost:44347/api/values)
+        </div>
+        <button onclick="ajaxCallToApiSetWithCORS()">(From JS CLIENT): CORS calls on values api</button>
+    </p>
+    <p>
+        <div>
+            APIs are called via this mvc server controller to return data from external api (as above)
+        </div>
+        <button onclick="ajaxCallViaServerToValues()">(Via MVC SERVER controller) calls values api (string)</button>
+        <button onclick="ajaxCallViaServerToProductsJson()">(Via MVC SERVER controller) calls products api (json)</button>
+        <button onclick="ajaxCallPostViaServerToProductsJson()">(Via MVC SERVER controller) POST products(json)</button>
+    </p>
+
+    <hr />
+    <p>
+        Result: <span id="result"></span>
+        <hr />
+        Result: <span id="resultJson"></span>
+    </p>
+
+</div>
+
+@section scripts {
+
+    <script type="text/javascript">
+
+        // Direct call from JS
+        function ajaxCallToApiSetWithCORS() {
+            const url = "https://localhost:44347/api/values";
+
+            fetch(url)
+                .then((response) => {
+                    return response.text();
+                })
+                .then((result) => {
+                    document.getElementById('result').innerHTML = result;
+                });
+        }
+
+        // Via MVC Controller
+        function ajaxCallViaServerToValues() {
+            const url = "/Home/GetValuesFromApi";
+
+            fetch(url)
+                .then((response) => {
+                    return response.text();
+                })
+                .then((result) => {
+                    document.getElementById('result').innerHTML = result;
+                });
+        }
+
+        // Via MVC Controller
+        function ajaxCallViaServerToProductsJson() {
+            const url = "/Home/GetProducts"
+            fetch(url)
+                .then((response) => {
+                    return response.text();
+                })
+                .then((result) => {
+                    document.getElementById('result').innerHTML = result;
+                    document.getElementById('resultJson').innerHTML = JSON.parse(result);
+                });
+        }
+
+        function ajaxCallPostViaServerToProductsJson() {
+            const url = "/Home/SaveProduct";
+            var prod = {
+                Id: 900,
+                Name: "New product A",
+                Description: "New product post from mvc js"
+            };
+
+            $.post(url, prod)
+                .done(function (resp) {
+                    console.log('posted successfully: ', resp);
+                    document.getElementById('result').innerHTML = resp;
+                }); 
+        }
+
+    </script>
+}
